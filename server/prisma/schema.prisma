@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model comments {
+  comment_id   Int      @id @default(autoincrement())
+  user_id      Int
+  photo_id     Int
+  comment_date DateTime @db.DateTime(0)
+  content      String   @db.Text
+  photos       photos   @relation(fields: [photo_id], references: [photo_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_photo_comment")
+  users        users    @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_comment")
+
+  @@index([photo_id], map: "fk_photo_comment")
+  @@index([user_id], map: "fk_user_comment")
+}
+
+model photos {
+  photo_id          Int            @id @default(autoincrement())
+  title             String         @db.VarChar(255)
+  photo_path        String         @db.VarChar(255)
+  photo_description String?        @db.Text
+  user_id           Int?
+  comments          comments[]
+  users             users?         @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_photo")
+  saved_photos      saved_photos[]
+
+  @@index([user_id], map: "fk_user_photo")
+}
+
+model saved_photos {
+  user_id   Int
+  photo_id  Int
+  save_date DateTime @db.DateTime(0)
+  photos    photos   @relation(fields: [photo_id], references: [photo_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_photo_saved_photo")
+  users     users    @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_saved_photo")
+
+  @@id([user_id, photo_id])
+  @@index([photo_id], map: "fk_photo_saved_photo")
+}
+
+model users {
+  user_id         Int            @id @default(autoincrement())
+  email           String?        @unique(map: "email") @db.VarChar(255)
+  hashed_password String?        @db.VarChar(255)
+  full_name       String         @db.VarChar(255)
+  birthdate       DateTime?      @db.DateTime(0)
+  avatar          String?        @db.LongText
+  refresh_token   String?        @db.VarChar(255)
+  sub_google_id   String?        @unique(map: "sub_google_id") @db.VarChar(255)
+  introduce       String?        @db.LongText
+  website         String?        @db.VarChar(255)
+  user_name       String?        @db.VarChar(255)
+  comments        comments[]
+  photos          photos[]
+  saved_photos    saved_photos[]
+}
