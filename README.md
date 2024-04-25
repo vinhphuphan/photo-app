@@ -19,6 +19,6 @@ This project is aimed at creating a robust photo-sharing application inspired by
 [![](https://skillicons.dev/icons?i=mysql,express,react,js,prisma)](https://skillicons.dev)
 
 ### Screentshot 📸
-<img src="https://raw.githubusercontent.com/vinhphuphan/photo-app/main/client/public/assets/screenshot.png" style="max-width: 100%">
+<img src="https://raw.githubusercontent.com/vinhphuphan/photo-app/main/client/public/assets/screenshot.png" style="max-width: 100%;">
 
 **Have fun building!** 🚀
