@@ -1,19 +1,23 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
-import Button from "./Button";
+import Button from "../Button/Button.jsx";
+import HomeButton from "../Button/HomeButton.jsx";
+import CreateButton from "../Button/CreateButton.jsx";
+import SearchBar from "./SearchBar.jsx";
+import UserMenu from "./UserMenu.jsx";
 import { IoChevronDownOutline } from "react-icons/io5";
 import { IoIosSearch } from "react-icons/io";
 import { GoBellFill } from "react-icons/go";
 import { AiFillMessage } from "react-icons/ai";
 import { IoArrowBackSharp } from "react-icons/io5";
-import Avatar from "./Avatar";
-import useRegisterModal from "../hooks/useRegisterModal";
-import useLoginModal from "../hooks/useLoginModal";
-import UserContext from "../contexts/UserContext.js";
+import Avatar from "../Avatar.jsx";
+import useRegisterModal from "../../hooks/useRegisterModal.js";
+import useLoginModal from "../../hooks/useLoginModal.js";
+import UserContext from "../../contexts/UserContext.js";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
 const Header = ({ action }) => {
-  const [ user , setUser ] = useContext(UserContext);
+  const [user, setUser] = useContext(UserContext);
   const [showSearch, setShowSearch] = useState(false);
   const [openUserMenu, setOpenUserMenu] = useState(false);
   const registerModal = useRegisterModal();
@@ -33,64 +37,54 @@ const Header = ({ action }) => {
   }, [loginModal]);
 
   const logOut = useCallback(() => {
-    // Clear the user session or token
     localStorage.removeItem("ACCESS_TOKEN");
     setUser(null);
+    navigate("/");
     toast.success("Logged out successfully!");
-    navigate("/")
   }, [setUser, navigate]);
 
   useEffect(() => {
     const handleOutsideClick = (event) => {
       if (
         openUserMenu &&
-        !event.target.closest(".user-menu") && // Check if clicked outside the user menu
-        !event.target.closest(".toggle-user-menu-btn") // Check if clicked outside the toggle button
+        !event.target.closest(".user-menu") &&
+        !event.target.closest(".toggle-user-menu-btn")
       ) {
         setOpenUserMenu(false);
       }
     };
-
     document.addEventListener("mousedown", handleOutsideClick);
-
     return () => {
       document.removeEventListener("mousedown", handleOutsideClick);
     };
   }, [openUserMenu]);
 
+  useEffect(() => {
+    const scrollHandler = () => {
+      const navbar = document.querySelector(".navbar");
+      if (navbar) {
+        if (window.scrollY > 0) {
+          navbar.classList.add("custom-box-shadow");
+        } else {
+          navbar.classList.remove("custom-box-shadow");
+        }
+      }
+    };
+    document.addEventListener("scroll", scrollHandler);
+    return () => {
+      document.removeEventListener("scroll", scrollHandler);
+    };
+  }, []);
+
   return (
-    <div className="navbar fixed w-full z-20 flex items-center border-b-[1px] px-5 py-4 gap-4 bg-white">
+    <header
+      className={`navbar fixed w-full z-10 flex items-center px-5 py-4 gap-4 bg-white transition`}
+    >
       {/* Home button */}
-      <Button
-        variant="home"
-        size="default"
-        className={`flex-shrink-0 rounded-full p-3 
-        ${showSearch ? "hidden" : "flex"}
-        ${action === "create" ? "bg-transparent text-gray-900" : ""}
-        `}
-        onClick={() => navigate("/")}
-      >
-        Home
-      </Button>
+      <HomeButton showSearch={showSearch} action={action} />
 
       {/* Create button */}
-      <Button
-        variant="normal"
-        size="default"
-        className={`flex-shrink-0 gap-2 
-        ${showSearch ? "hidden" : "flex"}
-        ${action === "create" ? "bg-gray-900 text-white rounded-full p-3" : ""}
-        `}
-        onClick={() => {
-          if (user) {
-            navigate("/create")
-          } else {
-            toast.error("You have to log in to create a new pin!!")
-          }
-        }}
-      >
-        Create <IoChevronDownOutline />
-      </Button>
+      <CreateButton user={user} action={action} />
 
       {/* Show Search Icon  */}
       <Button
@@ -103,26 +97,7 @@ const Header = ({ action }) => {
       </Button>
 
       {/* Search bar */}
-      <div
-        className={`${
-          showSearch ? "block  flex-grow" : "hidden sm:block flex-grow"
-        }`}
-      >
-        <div className="relative">
-          <form className="w-ful mx-auto">
-            <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-              <IoIosSearch size={22} className="text-neutral-700" />
-            </div>
-            <input
-              type="search"
-              id="default-search"
-              className="block w-full p-3 ps-10 rounded-full bg-neutral-100 hover:bg-neutral-200 transition text-base text-gray-700 placeholder-neutral-700"
-              placeholder="Search for easy dinner, fashion, etc"
-              required
-            />
-          </form>
-        </div>
-      </div>
+      <SearchBar showSearch={showSearch} setShowSearch={setShowSearch} />
 
       {/* Icons on the right of Header */}
       <div
@@ -130,6 +105,7 @@ const Header = ({ action }) => {
           showSearch ? "hidden" : "flex items-center flex-shrink-0 gap-2"
         } `}
       >
+        {/* Show search icon on small screen */}
         <Button
           variant={"icon"}
           size={"icon"}
@@ -138,16 +114,24 @@ const Header = ({ action }) => {
         >
           <IoIosSearch style={{ fontSize: "24px" }} />
         </Button>
+
         {user ? (
           <>
+            {/* Icons only when user logged in */}
             <Button variant={"icon"} size={"icon"}>
-              <GoBellFill style={{ fontSize: "24px" }} />
+              {" "}
+              <GoBellFill style={{ fontSize: "24px" }} />{" "}
             </Button>
             <Button variant={"icon"} size={"icon"}>
-              <AiFillMessage style={{ fontSize: "24px" }} />
+              {" "}
+              <AiFillMessage style={{ fontSize: "24px" }} />{" "}
             </Button>
             <Button variant={"icon"} size={"icon"}>
-              <Avatar src={user.avatar} />
+              {" "}
+              <Avatar
+                src={user.avatar}
+                onClick={() => navigate(`/${user.user_name}`)}
+              />{" "}
             </Button>
             <Button
               variant={"icon"}
@@ -157,27 +141,18 @@ const Header = ({ action }) => {
             >
               <IoChevronDownOutline />
             </Button>
-            {openUserMenu && (
-              <div className="user-menu absolute top-16 right-5 z-100 w-[12vw] bg-white shadow-xl border-[1px] rounded-xl overflow-hidden">
-                <div className="flex flex-col">
-                  <Button variant={"menu"} size={"menu"}>
-                    Profile
-                  </Button>
-                  <Button variant={"menu"} size={"menu"}>
-                    Settings
-                  </Button>
-                  <Button variant={"menu"} size={"menu"} onClick={logOut}>
-                    Log out
-                  </Button>
-                </div>
-              </div>
-            )}
+
+            {/* User Menu section */}
+            {openUserMenu && <UserMenu logOut={logOut} />}
           </>
         ) : (
           <>
+            {/* Log in button */}
             <Button variant="secondary" size="primary" onClick={openLoginModal}>
               Log in
             </Button>
+
+            {/* Sign up button */}
             <Button
               variant="primary"
               size="primary"
@@ -188,7 +163,7 @@ const Header = ({ action }) => {
           </>
         )}
       </div>
-    </div>
+    </header>
   );
 };
 

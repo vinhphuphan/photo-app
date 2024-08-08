@@ -1,6 +1,32 @@
 import React from "react";
+import cn from "../utils/cn"
+import { cva } from "class-variance-authority";
 
-const ContentContainer = ({ children }) => {
+const contentContainerVariants = cva("flex flex-col justify-center", {
+  variants : {
+    variant : {
+      default : "bg-white rounded-xl overflow-hidden",
+      profile : ""
+    },
+    size : {
+      default : "w-full h-[85vh] md:w-4/6 xl:w-[60%] py-10 px-14",
+      profile : ""
+    }
+  },
+  defaultVariants : {
+    variant: "default",
+    size : "default"
+  }
+
+})
+
+const ContentContainer = ({ 
+  children, 
+  className,
+  variant,
+  size,
+  ...props
+ }) => {
   return (
     <div
       className="
@@ -9,11 +35,8 @@ const ContentContainer = ({ children }) => {
             bg-neutral-200"
     >
       <div
-        className="
-        w-full h-[85vh] md:w-4/6 xl:w-[60%] 
-        flex flex-col gap-2 justify-center 
-        bg-white rounded-xl py-10 px-14 overflow-hidden
-        "
+        className={cn(contentContainerVariants({ variant, size, className }))}
+        {...props}
       >
         {children}
       </div>

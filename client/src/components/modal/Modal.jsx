@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import Button from "../Button";
+import Button from "../Button/Button";
 import React from "react";
 import { IoMdClose } from "react-icons/io";
 import { ClipLoader } from "react-spinners";

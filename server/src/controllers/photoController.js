@@ -4,18 +4,23 @@ import { decodeToken } from '../config/jwt.js';
 
 const prisma = new PrismaClient();
 
-// Get photos
+// Get photos with pagination
 export const getPhotos = async (req, res) => {
+    
     try {
-        const data = await prisma.photos.findMany({ include : {
-            users : true
-        }});
+        const data = await prisma.photos.findMany({
+            include: {
+                users: true
+            }
+        });
+
         return responseData(res, "Get photos successfully", 200, data);
     } catch (err) {
         console.error("Error fetching photos:", err);
         return responseData(res, "System Error", 500);
     }
 };
+
 
 // Search photos
 export const searchPhotos = async (req, res) => {
@@ -32,7 +37,7 @@ export const searchPhotos = async (req, res) => {
                 }
             }
         );
-        if ( data ) {
+        if (data) {
             return responseData(res, "Get photos successfully", 200, data);
         }
         return responseData(res, `No exact match for query : ${query}`, 200, "");
@@ -50,7 +55,7 @@ export const getPhotoById = async (req, res) => {
         const data = await prisma.photos.findUnique({
             where: { photo_id },
             include: {
-                users: true 
+                users: true
             }
         });
 
@@ -68,18 +73,19 @@ export const getPhotoById = async (req, res) => {
 // Check save or not by photo_id and user_id from token in header to toggle the heart button on the right corner of photo 
 export const checkSave = async (req, res) => {
     // Extract photo_id from request body
-    const photo_id = parseInt(req.body.photo_id);
-  
+    const photo_id = parseInt(req.params.id);
+
     // Extract token from request headers
     const { token } = req.headers;
 
+    // Decode token to extract user_id
+    const { user_id } = decodeToken(token);
+
     try {
-        // Decode token to extract user_id
-        const { user_id } = decodeToken(token);
 
         // Check if the photo with the given photo_id exists
-        const photo = await prisma.photos.findUnique({ 
-            where: { photo_id } 
+        const photo = await prisma.photos.findFirst({
+            where: { photo_id }
         });
 
         if (!photo) {
@@ -95,7 +101,7 @@ export const checkSave = async (req, res) => {
         });
 
         // Return response indicating whether the photo is saved by the user
-        return responseData(res, "Check save status successfully", 200, { saved_status: !!savedPhoto });
+        return responseData(res, "Check save status successfully", 200, !!savedPhoto);
     } catch (err) {
         console.error("Error checking save status:", err);
         return responseData(res, "System Error", 500);
@@ -105,7 +111,7 @@ export const checkSave = async (req, res) => {
 export const savePhoto = async (req, res) => {
     // Extract photo_id from request body
     const photo_id = parseInt(req.body.photo_id);
-  
+
     // Extract token from request headers
     const { token } = req.headers;
 
@@ -114,28 +120,28 @@ export const savePhoto = async (req, res) => {
         const { user_id } = decodeToken(token);
 
         // Check if the user with the given user_id exists
-        const user = await prisma.users.findUnique({ 
-            where: { user_id } 
-        });    
+        const user = await prisma.users.findUnique({
+            where: { user_id }
+        });
 
         if (!user) {
             return responseData(res, "User does not exist", 404);
         }
 
         // Check if the photo with the given photo_id exists
-        const photo = await prisma.photos.findUnique({ 
-            where: { photo_id } 
+        const photo = await prisma.photos.findUnique({
+            where: { photo_id }
         });
 
         if (!photo) {
             return responseData(res, "Photo not found", 404);
         }
 
-        const savedStatus = await prisma.saved_photos.findFirst({ 
-            where: { 
-                user_id :  user_id , 
-                photo_id : photo_id , 
-            } 
+        const savedStatus = await prisma.saved_photos.findFirst({
+            where: {
+                user_id: user_id,
+                photo_id: photo_id,
+            }
         });
 
         if (savedStatus) {
@@ -145,11 +151,11 @@ export const savePhoto = async (req, res) => {
         let newSaved = {
             user_id,
             photo_id,
-            save_date : new Date(),
+            save_date: new Date(),
         }
 
         // Check if the user has saved the photo
-        const createSaved = await prisma.saved_photos.create({ data : newSaved });
+        const createSaved = await prisma.saved_photos.create({ data: newSaved });
 
         // Return response indicating whether the photo is saved by the user
         return responseData(res, `User id ${user_id} have saved photo id ${photo_id} successfully`, 201, createSaved);
@@ -162,7 +168,7 @@ export const savePhoto = async (req, res) => {
 export const uploadPhoto = async (req, res) => {
     const { title, photo_description, photo_path } = req.body;
     const { token } = req.headers
-    
+
     const { user_id } = decodeToken(token)
 
     try {
@@ -192,53 +198,66 @@ export const uploadPhoto = async (req, res) => {
     }
 }
 
+// Get photos created by user_name
+export const getPhotoCreatedByUser = async (req, res) => {
+    const user_name = req.params.user_name;
 
-// Get photos created by user_id
-export const getPhotosCreatedByUser = async (req, res) => {
-    const { token } = req.headers; // Destructure photo_id from req.params
+    if (!user_name) {
+        return responseData(res, "Invalid user name", 400);
+    }
 
-    const { user_id } = decodeToken(token)
-    
     try {
-        const data = await prisma.photos.findMany({
-            where: { user_id },
-            include: {
-                users: true 
-            }
+        const user = await prisma.users.findFirst({ where: { user_name } });
+        if (!user) {
+            return responseData(res, "User not found", 404);
+        }
+        const photos = await prisma.photos.findMany({
+            where: { user_id: user.user_id },
         });
 
-        if (!data) {
-            return responseData(res, `Photos created by user id ${user_id} not found`, 404);
+        if (photos.length === 0) {
+            return responseData(res, `Photos created by ${user_name} not found`, 404);
         }
 
-        return responseData(res, `Get photos created by user id ${user_id} successfully`, 200, data);
+        return responseData(res, `Get photos created by ${user_name} successfully`, 200, photos);
     } catch (err) {
-        console.error("Error getting photos created by user_id:", err);
+        console.error("Error getting photos by user name:", err);
         return responseData(res, "System Error", 500);
     }
 };
 
-// Get photos created by user_id
+// Get photos saved by user_name
 export const getPhotoSavedByUser = async (req, res) => {
-    const { token } = req.headers; // Destructure photo_id from req.params
+    const user_name = req.params.user_name;
 
-    const { user_id } = decodeToken(token)
-    
+    if (!user_name) {
+        return responseData(res, "Invalid user name", 400);
+    }
+
     try {
-        const data = await prisma.saved_photos.findMany({
-            where: { user_id },
+        const user = await prisma.users.findUnique({ where: { user_name } });
+
+        if (!user) {
+            return responseData(res, "User not found", 404);
+        }
+
+        const savedPhotos = await prisma.saved_photos.findMany({
+            where: { user_id: user.user_id },
             include: {
-                users: true 
+                photos: true
             }
         });
 
-        if (!data) {
-            return responseData(res, `Photos saved by user id ${user_id} not found`, 404);
+        if (savedPhotos.length === 0) {
+            return responseData(res, `Photos saved by user ${user_name} not found`, 404);
         }
 
-        return responseData(res, `Get photos saved by user id ${user_id} successfully`, 200, data);
+        // Extract the photos from the savedPhotos array
+        const photos = savedPhotos.map(savedPhoto => savedPhoto.photos);
+
+        return responseData(res, `Get photos saved by user ${user_name} successfully`, 200, photos);
     } catch (err) {
-        console.error("Error getting photos saved by user_id:", err);
+        console.error("Error getting photos saved by user_name:", err);
         return responseData(res, "System Error", 500);
     }
 };
@@ -246,7 +265,7 @@ export const getPhotoSavedByUser = async (req, res) => {
 // Delete photo by photo_id
 export const deletePhoto = async (req, res) => {
     const photo_id = parseInt(req.params.photo_id); // Destructure photo_id from req.params
-    
+
     try {
         const photo = await prisma.photos.findFirst({
             where: { photo_id }
@@ -256,7 +275,7 @@ export const deletePhoto = async (req, res) => {
             return responseData(res, `Photo with id ${photo_id} not found`, 404);
         }
 
-        await prisma.photos.delete({where : { photo_id }})
+        await prisma.photos.delete({ where: { photo_id } })
 
         return responseData(res, `Delete photo id ${photo_id} successfully`, 200, photo);
     } catch (err) {

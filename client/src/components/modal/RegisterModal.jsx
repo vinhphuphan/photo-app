@@ -1,15 +1,19 @@
 import axios from "axios";
 import useRegisterModal from "../../hooks/useRegisterModal";
 import { useForm } from "react-hook-form";
-import { useCallback, useState } from "react";
+import { useCallback, useContext, useState } from "react";
 import toast from "react-hot-toast";
-import Button from "../Button";
+import Button from "../Button/Button";
 import { FcGoogle } from "react-icons/fc";
 import Modal from "./Modal";
 import Input from "../Input";
 import useLoginModal from "../../hooks/useLoginModal";
+import { useGoogleLogin } from "@react-oauth/google";
+import UserContext from "../../contexts/UserContext";
 
 const RegisterModal = () => {
+  // eslint-disable-next-line
+  const [user, setUser] = useContext(UserContext);
   const registerModal = useRegisterModal();
   const loginModal = useLoginModal();
   const [isLoading, setIsLoading] = useState(false);
@@ -28,11 +32,9 @@ const RegisterModal = () => {
 
   const onSubmit = async (data) => {
     setIsLoading(true);
-    console.log(data);
     axios
       .post("http://localhost:8080/users/signup", data)
       .then((result) => {
-        console.log(result);
         registerModal.onClose();
         toast.success("Sign up successfully!");
       })
@@ -44,6 +46,31 @@ const RegisterModal = () => {
         setIsLoading(false);
       });
   };
+
+  const googleLogin2 = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      setIsLoading(true);
+      const userInfo = await axios.get(
+        'https://www.googleapis.com/oauth2/v3/userinfo',
+        { headers: { Authorization: `Bearer ${tokenResponse.access_token}` } },
+      );
+      await axios.post("http://localhost:8080/users/google", userInfo)
+        .then((result) => {
+            localStorage.setItem("ACCESS_TOKEN", result.data.data.token);
+            setUser(result.data.data.user)
+            console.log(result.data.data.user)
+            registerModal.onClose();
+            toast.success("Registered and Logged in succesfully");
+        })
+        .catch((error) => {
+            toast.error(error?.response?.data?.message);
+        })
+        .finally(
+            setIsLoading(false)
+        )
+    },
+    onError: errorResponse => console.log(errorResponse)
+  });
 
   const toggle = useCallback(() => {
     loginModal.onOpen();
@@ -97,7 +124,7 @@ const RegisterModal = () => {
         variant=""
         size=""
         className="w-full relative flex justify-center transition text-sm font-light text-neutral-800 bg-white border-[1px] border-neutral-400 rounded-full hover:bg-neutral-200"
-        onClick={() => {}}
+        onClick={googleLogin2}
       >
         <FcGoogle size={22} className="absolute left-2 md:left-3 top-1.75" />
         Continue with Google

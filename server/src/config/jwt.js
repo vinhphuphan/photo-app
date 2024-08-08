@@ -26,10 +26,16 @@ export const decodeToken = (token) => jwt.decode(token);
 
 // Middleware to verify access_token
 export const verifyAccessTokenMiddleware = (req, res, next) => {
-    const token = req.headers;
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader) {
+        return responseData(res, "Access token is missing", 401, "");
+    }
+
+    const token = authHeader.split(' ')[1];
 
     if (!token) {
-        return responseData(res, "Access token is missing" , 401 , "");
+        return responseData(res, "Access token is missing", 401, "");
     }
 
     try {
@@ -38,9 +44,26 @@ export const verifyAccessTokenMiddleware = (req, res, next) => {
         next();
     } catch (error) {
         if (error.name === "TokenExpiredError") {
-            return res.status(401).json({ error: "Access token has expired" });
+            return res.status(401).json({ error: "Access token has expired. Please log in again." });
         } else {
             return res.status(401).json({ error: "Invalid access token" });
         }
+    }
+};
+
+// Function to refresh tokens
+export const refreshToken = (req, res) => {
+    const { refreshToken } = req.body;
+
+    if (!refreshToken) {
+        return responseData(res, "Refresh token is missing", 400, "");
+    }
+
+    try {
+        const decoded = verifyRefreshToken(refreshToken);
+        const newAccessToken = createAccessToken({ user_id: decoded.user_id });
+        return responseData(res, "Access token refreshed", 200, { accessToken: newAccessToken });
+    } catch (error) {
+        return responseData(res, "Invalid refresh token", 401, "");
     }
 };

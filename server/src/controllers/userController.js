@@ -2,7 +2,6 @@ import { PrismaClient } from '@prisma/client';
 import { responseData } from "../config/config.js";
 import bcrypt from "bcrypt";
 import { createAccessToken, createRefreshToken, decodeToken } from "../config/jwt.js";
-import axios from 'axios';
 
 const prisma = new PrismaClient();
 
@@ -57,10 +56,14 @@ export const login = async (req, res) => {
         });
 
         const userInfo = {
-            email : user.email, 
-            full_name : user.full_name,
-            avatar : user.avatar,
-            birthdate : user.birthdate
+            id: user.user_id,
+            email: user.email,
+            full_name: user.full_name,
+            avatar: user.avatar,
+            birthdate: user.birthdate,
+            introduce: user.introduce,
+            website: user.website,
+            user_name: user.user_name
         }
 
         const refreshToken = createRefreshToken({
@@ -73,7 +76,7 @@ export const login = async (req, res) => {
             data: { refresh_token: refreshToken }
         });
 
-        return responseData(res, "Login successfully!", 200, { user : userInfo, token : token});
+        return responseData(res, "Login successfully!", 200, { user: userInfo, token: token });
     } catch (err) {
         console.error("Error logging in:", err);
         return responseData(res, "System Error", 500);
@@ -82,47 +85,65 @@ export const login = async (req, res) => {
 
 // Function for logging in with Google
 export const loginWithGoogle = async (req, res) => {
-    // Extract user information from request body
-    const { sub, name, picture } = req.body.data;
-    
+    const { sub, name, picture, email } = req.body.data;
+
     try {
         let token = "";
-        // Check if a user with the provided sub_google_id exists in the database
-        let checkUser = await prisma.users.findUnique({ where: { sub_google_id: sub } });
+        let user = null;
 
-        if (checkUser) {
-            // If the user exists, generate an access token
-            token = createAccessToken({ user_id: checkUser.user_id, full_name: checkUser.full_name });
-        } else {
-            // If the user doesn't exist, create a new user record
-            const newUser = {
-                full_name: name,
-                email: "", 
-                sub_google_id: sub,
-                hashed_password: "", // Assuming you're not using password-based authentication for Google users
-                avatar: picture
-            };
-
-            // Create a new user record in the database
-            const createdUser = await prisma.users.create({ data: newUser });
-
-            // Generate a refresh token for the newly created user
-            const refreshToken = createRefreshToken({ user_id: createdUser.user_id });
-
-            // Generate an access token
-            token = createAccessToken({ user_id: createdUser.user_id, full_name: name , avatar : picture });
-
-            // Update the user record with the refresh token
-            await prisma.users.update({
-                where: { user_id: createdUser.user_id },
-                data: { refresh_token: refreshToken }
-            });
+        if (email) {
+            // Check if a user with the provided email exists
+            user = await prisma.users.findUnique({ where: { email } });
         }
 
-        // Return success response with access token
-        return responseData(res, "Login with Google successful!", 200,  { user : checkUser || newUser, token : token});
+        if (user) {
+            // User exists, generate an access token
+            token = createAccessToken({ user_id: user.user_id, full_name: user.full_name, avatar: user.avatar });
+        } else {
+            // Check if a user with the provided Google sub exists
+            user = await prisma.users.findUnique({ where: { sub_google_id: sub } });
+
+            if (!user) {
+                // No existing user found, create a new user
+                const newUser = {
+                    full_name: name,
+                    email: email || `google_${sub}@noemail.com`, // Use a placeholder if no email provided
+                    sub_google_id: sub,
+                    hashed_password: "", // No password for Google users
+                    avatar: picture
+                };
+
+                user = await prisma.users.create({ data: newUser });
+
+                // Generate a refresh token for the newly created user
+                const refreshToken = createRefreshToken({ user_id: user.user_id });
+
+                // Update the user record with the refresh token
+                await prisma.users.update({
+                    where: { user_id: user.user_id },
+                    data: { refresh_token: refreshToken }
+                });
+            }
+
+            // Generate an access token
+            token = createAccessToken({ user_id: user.user_id, full_name: user.full_name, avatar: user.avatar });
+        }
+
+        // Define userInfo to include in response
+        const userInfo = {
+            id: user.user_id,
+            email: user.email,
+            full_name: user.full_name,
+            avatar: user.avatar,
+            birthdate: user.birthdate,
+            introduce: user.introduce,
+            website: user.website,
+            user_name: user.user_name
+        };
+
+        // Return success response with user and token
+        return responseData(res, "Login with Google successful!", 200, { user: userInfo, token });
     } catch (error) {
-        // Handle errors
         console.error("Error logging in with Google", error);
         return responseData(res, "Error logging in with Google", 500);
     }
@@ -144,7 +165,7 @@ export const getUserInfoByToken = async (req, res) => {
     const { token } = req.headers
     const { user_id } = decodeToken(token)
     try {
-        const data = await prisma.users.findUnique({ where : {user_id} });
+        const data = await prisma.users.findUnique({ where: { user_id } });
         return responseData(res, "Get user by id successfully", 200, data);
     } catch (err) {
         console.error("Error fetching user by id:", err);
@@ -152,45 +173,124 @@ export const getUserInfoByToken = async (req, res) => {
     }
 };
 
+// Get user info by user_name
+export const getUserInfoByUserName = async (req, res) => {
+    const user_name = req.params.user_name
+    try {
+        const user = await prisma.users.findUnique({ where: { user_name } });
+        const userInfo = {
+            user_id : user.user_id,
+            email: user.email || "",
+            full_name: user.full_name,
+            avatar: user.avatar,
+            birthdate: user.birthdate,
+            introduce: user.introduce,
+            website: user.website,
+            user_name: user.user_name
+        }
+
+        return responseData(res, "Get user by user_name successfully", 200, userInfo);
+    } catch (err) {
+        console.error("Error fetching user by user_name:", err);
+        return responseData(res, "System Error", 500);
+    }
+};
 
 // Upload user info by token
 export const uploadUserInfo = async (req, res) => {
-
-    const { 
-        name, 
-        surname, 
-        introduce, 
-        website, 
+    const {
+        full_name,
+        introduce,
+        website,
         user_name,
         photo_path
-     } = req.body;
+    } = req.body;
+    const { token } = req.headers;
 
-    const { token } = req.headers
-    const { user_id } = decodeToken(token)
+    // Check if token is provided in the headers
+    if (!token) {
+        return responseData(res, "Unauthorized: No token provided", 401);
+    }
+
+    let user_id;
+
     try {
-        let user = await prisma.users.findUnique({ where : {user_id} });
+        // Decode the token to extract user_id
+        const decoded = decodeToken(token);
+        user_id = decoded?.user_id;
+    } catch (error) {
+        return responseData(res, "Unauthorized: Invalid token", 401);
+    }
+
+    try {
+        // Find the user in the database using the user_id
+        const user = await prisma.users.findUnique({ where: { user_id } });
+
         if (!user) {
             return responseData(res, "User not found", 404);
         }
 
-        // Combine name and surname into full_name
-        const full_name = `${surname} ${name}`;
+        // Construct the update object dynamically based on non-empty fields
+        const updateData = {};
 
-        // Update user's avatar path
-        user = await prisma.users.update({
-            where: { user_id },
-            data: { 
-                full_name,
-                introduce,
-                website,
-                user_name,
-                avatar: photo_path
-             }
-        });
+        // Add fields to updateData only if they are provided (non-empty)
+        if (full_name) updateData.full_name = full_name;
+        if (introduce) updateData.introduce = introduce;
+        if (website) updateData.website = website;
+        if (user_name) updateData.user_name = user_name;
+        if (photo_path) updateData.avatar = photo_path;
 
-        return responseData(res, "Upload user info by token successfully", 200, "");
+        // Update user's info in the database only if there are fields to update
+        let updatedUser;
+        if (Object.keys(updateData).length > 0) {
+            updatedUser = await prisma.users.update({
+                where: { user_id },
+                data: updateData
+            });
+        }
+
+        const userInfo = {
+            id: user.user_id,
+            email: user.email,
+            full_name: user.full_name,
+            avatar: user.avatar,
+            birthdate: user.birthdate,
+            introduce: user.introduce,
+            website: user.website,
+            user_name: user.user_name
+        }
+        return responseData(res, "Upload user info by token successfully", 200, userInfo);
     } catch (err) {
-        console.error("Error uploading user info by token : ", err);
+        console.error("Error uploading user info by token: ", err);
+        return responseData(res, "System Error", 500);
+    }
+};
+
+// Get the follwers of user by user_name
+export const getFollowersByUserName = async (req, res) => {
+    const user_name = req.params.user_name;
+    try {
+        const user = await prisma.users.findUnique({ where: { user_name } });
+        if (!user) {
+            return responseData(res, "User not found", 404);
+        }
+        const followers = await prisma.followers.findMany(
+            {
+                where: { followed_id: user.user_id },
+                include: { usersFollowing: true }
+            },
+        )
+
+        const formattedFollowers = followers.map(follower => ({
+            user_id: follower.usersFollowing.user_id,
+            full_name: follower.usersFollowing.full_name,
+            avatar: follower.usersFollowing.avatar,
+            user_name: follower.usersFollowing.user_name,
+          }));
+
+        return responseData(res, "Get followers by user_name successfully", 200, formattedFollowers);
+    } catch (err) {
+        console.error("Error followers user by user_name:", err);
         return responseData(res, "System Error", 500);
     }
 };

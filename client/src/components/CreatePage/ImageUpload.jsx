@@ -3,7 +3,7 @@ import { FaArrowCircleUp } from "react-icons/fa";
 import UploadWidget from "./UploadWidget";
 import { ClipLoader } from "react-spinners";
 
-const ImageUpload = ({ sendUrl, disabled }) => {
+const ImageUpload = ({ sendUrl, disabled, clearUrl }) => {
   const [url, updateUrl] = useState();
 
   function handleOnUpload(error, result, widget) {
@@ -21,6 +21,12 @@ const ImageUpload = ({ sendUrl, disabled }) => {
       sendUrl(url);
     }
   }, [url, sendUrl]);
+
+  useEffect(() => {
+    if (clearUrl) {
+      updateUrl("");
+    }
+  }, [clearUrl]);
 
   return (
     <UploadWidget onUpload={handleOnUpload}>
@@ -42,47 +48,45 @@ const ImageUpload = ({ sendUrl, disabled }) => {
             
                  `}
           >
-           {
-            disabled ?
-            (
+            {disabled ? (
               <>
-              <div className="absolute inset-0 z-50 bg-transparent flex items-center justify-center">
-                    <ClipLoader
+                <div className="absolute inset-0 z-50 bg-transparent flex items-center justify-center">
+                  <ClipLoader
                     color={"#fffff"}
                     loading={disabled}
                     size={30}
                     aria-label="Loading Spinner"
                     data-testid="loader"
                   />
-              </div>
+                </div>
               </>
-            )
-            : (
+            ) : (
               <>
-              <FaArrowCircleUp size={30} className={url ? "hidden" : "block"} />
-             <p
-               className={
-                 url
-                   ? "hidden"
-                   : "text-xs text-center md:text-sm font-normal text-gray-900"
-               }
-             >
-               Upload a photo
-             </p>
-             <p
-               className={
-                 url
-                   ? "hidden"
-                   : "absolute bottom-3 p-1 text-xs md:text-sm text-center w-full font-normal text-gray-900"
-               }
-             >
-               You should use high-quality .jpg files under 20MB or high-quality
-               .mp4 files under 200MB in size.
-             </p>
+                <FaArrowCircleUp
+                  size={30}
+                  className={url ? "hidden" : "block"}
+                />
+                <p
+                  className={
+                    url
+                      ? "hidden"
+                      : "text-xs text-center md:text-sm font-normal text-gray-900"
+                  }
+                >
+                  Upload a photo
+                </p>
+                <p
+                  className={
+                    url
+                      ? "hidden"
+                      : "absolute bottom-3 p-1 text-xs md:text-sm text-center w-full font-normal text-gray-900"
+                  }
+                >
+                  You should use high-quality .jpg files under 20MB or
+                  high-quality .mp4 files under 200MB in size.
+                </p>
               </>
-            )
-             
-           }
+            )}
             {url && (
               <div className="absolute inset-0 w-full h-full rounded-xl overflow-hidden">
                 <img
@@ -90,21 +94,21 @@ const ImageUpload = ({ sendUrl, disabled }) => {
                   alt="Upload"
                   src={url}
                   style={{
-                    objectFit: "contain",
+                    objectFit: "cover",
                     width: "100%",
                     height: "100%",
                   }}
                 />
-                
+
                 {disabled && (
                   <div className="absolute inset-0 bg-transparent z-50 flex items-center justify-center">
                     <ClipLoader
-                    color={"#fffff"}
-                    loading={disabled}
-                    size={35}
-                    aria-label="Loading Spinner"
-                    data-testid="loader"
-                  />
+                      color={"#fffff"}
+                      loading={disabled}
+                      size={35}
+                      aria-label="Loading Spinner"
+                      data-testid="loader"
+                    />
                   </div>
                 )}
               </div>

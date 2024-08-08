@@ -32,12 +32,9 @@ const UploadWidget = ({ children, onUpload }) => {
   }
 
   useEffect(() => {
-    // Store the Cloudinary window instance to a ref when the page renders
-
     if (!cloudinary) {
       cloudinary = window.cloudinary;
     }
-
     function onIdle() {
       if (!widget.current) {
         widget.current = createWidget();

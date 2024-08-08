@@ -1,21 +1,22 @@
-import React, { useContext, useState } from "react";
-import Header from "../components/Header";
+import React, { useContext, useEffect, useState } from "react";
+import Header from "../components/Header/Header.jsx";
 import ContentContainer from "../components/ContentContainer";
-import Button from "../components/Button";
+import Button from "../components/Button/Button.jsx";
 import { BsThreeDots } from "react-icons/bs";
-import ImageUpload from "../components/ImageUpload";
+import ImageUpload from "../components/CreatePage/ImageUpload";
 import Input from "../components/Input";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { uploadPhotoApi } from "../utils/fetchFromApi";
 import UserContext from "../contexts/UserContext.js";
 import Avatar from "../components/Avatar";
+import ToasterProvider from "../providers/ToasterProvider.jsx";
 
 const Create = () => {
-  const [ user ] = useContext(UserContext);
+  const [user] = useContext(UserContext);
   const [isLoading, setIsLoading] = useState(false);
   const [photoUrl, setPhotoUrl] = useState("");
-
+  const [clearPhotoUrl, setClearPhotoUrl] = useState(false);
   function handleUrl(data) {
     setPhotoUrl(data);
   }
@@ -24,7 +25,7 @@ const Create = () => {
     register,
     handleSubmit,
     formState: { errors },
-    reset
+    reset,
   } = useForm({
     defaultValues: {
       title: "",
@@ -36,12 +37,17 @@ const Create = () => {
   const onSubmit = async (data) => {
     setIsLoading(true);
     data.photo_path = photoUrl;
-    console.log(data);
     await uploadPhotoApi(data, "photos/upload")
       .then((result) => {
-        console.log(result);
-        toast.success("Create pin successfully!");
         reset();
+        setPhotoUrl("");
+        setClearPhotoUrl(!clearPhotoUrl);
+        toast.success("Create pin successfully!", {
+          duration: 800,
+        });
+        setTimeout(() => {
+          window.location.reload();
+        }, 800)
       })
       .catch((error) => {
         console.log(error?.response?.data?.message);
@@ -52,8 +58,16 @@ const Create = () => {
       });
   };
 
+  // Reset overflow style when component unmounts
+  useEffect(() => {
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, []);
+
   return (
     <div>
+      <ToasterProvider />
       <Header action="create" />
       <ContentContainer>
         <form onSubmit={handleSubmit(onSubmit)} className="w-full h-full">
@@ -74,11 +88,15 @@ const Create = () => {
 
           {/* Main content */}
           <div className="w-full h-5/6 flex flex-row justify-between">
-            {/* Image Upload */}
+            {/* Photo Upload */}
             <div className="flex w-2/5 ">
-              <ImageUpload sendUrl={handleUrl} disabled={isLoading} />
+              <ImageUpload
+                sendUrl={handleUrl}
+                disabled={isLoading}
+                clearUrl={clearPhotoUrl}
+              />
             </div>
-            {/* Image Details */}
+            {/* Photo Details */}
             <div className="flex flex-col gap-4 w-[55%]">
               <Input
                 id="title"

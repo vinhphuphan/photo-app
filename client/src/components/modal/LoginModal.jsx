@@ -1,17 +1,18 @@
 import axios from "axios";
 import useRegisterModal from "../../hooks/useRegisterModal";
-import useLoginModal from "../../hooks/useLoginModal";
+import useLoginModal from "../../hooks/useLoginModal.js";
 import { useForm } from "react-hook-form";
 import { useCallback, useState, useContext } from "react";
 import toast from "react-hot-toast";
-import Button from "../Button";
+import Button from "../Button/Button.jsx";
 import { useGoogleLogin } from "@react-oauth/google";
-import Modal from "./Modal";
-import Input from "../Input";
+import Modal from "./Modal.jsx";
+import Input from "../Input.jsx";
 import { FcGoogle } from "react-icons/fc";
-import UserContext from "../../contexts/UserContext.js"
+import UserContext from "../../contexts/UserContext.js";
 
 const LoginModal = () => {
+  // eslint-disable-next-line
   const [user, setUser] = useContext(UserContext);
   const registerModal = useRegisterModal();
   const loginModal = useLoginModal();
@@ -27,41 +28,37 @@ const LoginModal = () => {
     },
   });
 
-  
-const googleLogin = useGoogleLogin({
+  const googleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       setIsLoading(true);
       const userInfo = await axios.get(
-        'https://www.googleapis.com/oauth2/v3/userinfo',
-        { headers: { Authorization: `Bearer ${tokenResponse.access_token}` } },
+        "https://www.googleapis.com/oauth2/v3/userinfo",
+        { headers: { Authorization: `Bearer ${tokenResponse.access_token}` } }
       );
-      await axios.post("http://localhost:8080/users/google", userInfo)
+      await axios
+        .post(`${process.env.REACT_APP_BASE_URL}/users/google`, userInfo)
         .then((result) => {
-            localStorage.setItem("ACCESS_TOKEN", result.data.data.token);
-            setUser(result.data.data.user)
-            console.log(result.data.data.user)
-            loginModal.onClose();
-            toast.success("Logged in succesfully");
+          localStorage.setItem("ACCESS_TOKEN", result.data.data.token);
+          setUser(result.data.data.user);
+          loginModal.onClose();
+          toast.success("Logged in succesfully");
         })
         .catch((error) => {
-            toast.error(error?.response?.data?.message);
+          toast.error(error?.response?.data?.message);
         })
-        .finally(
-            setIsLoading(false)
-        )
+        .finally(setIsLoading(false));
     },
-    onError: errorResponse => console.log(errorResponse)
+    onError: (errorResponse) => console.log(errorResponse),
   });
 
   const onSubmit = async (data) => {
     setIsLoading(true);
 
     axios
-      .post("http://localhost:8080/users/login", data)
+      .post(`${process.env.REACT_APP_BASE_URL}/users/login`, data)
       .then((result) => {
         localStorage.setItem("ACCESS_TOKEN", result.data.data.token);
-        setUser(result.data.data.user)
-        console.log(result.data.data.user)
+        setUser(result.data.data.user);
         loginModal.onClose();
         toast.success("Logged in succesfully");
       })
@@ -80,26 +77,27 @@ const googleLogin = useGoogleLogin({
 
   const bodyContent = (
     <div className="w-full flex flex-col gap-4 mb-2">
-          <Input
-            id="email"
-            label="Email"
-            type="text"
-            disabled={isLoading}
-            placeholder="Email"
-            register={register}
-            errors={errors}
-            required
-          />
-          <Input
-            id="password"
-            label="Password"
-            type="password"
-            disabled={isLoading}
-            placeholder="Password"
-            register={register}
-            errors={errors}
-            required
-          />
+      <Input
+        id="email"
+        label="Email"
+        type="text"
+        disabled={isLoading}
+        placeholder="Email"
+        register={register}
+        errors={errors}
+        required
+        autocomplete
+      />
+      <Input
+        id="password"
+        label="Password"
+        type="password"
+        disabled={isLoading}
+        placeholder="Password"
+        register={register}
+        errors={errors}
+        required
+      />
     </div>
   );
 

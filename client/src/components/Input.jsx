@@ -1,4 +1,28 @@
 import cn from "../utils/cn.js";
+import { cva } from "class-variance-authority";
+import React from "react";
+
+const inputVariants = cva(
+  "block w-full p-3 rounded-xl bg-white border-[1px] text-sm text-gray-900",
+  {
+    variants: {
+      variant: {
+        primary: "border-blue-500 focus:border-blue-700",
+        error: "border-rose-500 focus:border-rose-500",
+        neutral: "border-neutral-400 focus:border-black",
+      },
+      size: {
+        small: "p-2 text-xs",
+        default: "p-3 text-sm",
+        large: "p-4 text-base",
+      },
+    },
+    defaultVariants: {
+      variant: "neutral",
+      size: "default",
+    },
+  }
+);
 
 const Input = ({
   id,
@@ -10,38 +34,37 @@ const Input = ({
   disabled,
   errors,
   className,
+  commentInput,
+  value,
+  onChange,
+  variant,
+  size,
+  ...props
 }) => {
-  // Define dynamic class names based on props and errors
+  
   const inputClassName = cn(
-    "block",
-    "w-full",
-    "p-3",
-    "rounded-xl",
-    "bg-white",
-    "border-[1px]",
-    "text-sm",
-    "text-gray-900",
+    inputVariants({ variant: errors[id] ? "error" : variant, size }),
     {
       "disabled:bg-gray-200": disabled,
       "disabled:cursor-not-allowed": disabled,
     },
-    { "border-rose-500": errors[id], "focus:border-rose-500": errors[id] },
-    { "border-neutral-400": !errors[id] },
-    { "focus:border-black": !errors[id] }
+    className
   );
 
   return (
-    <div className="w-full relative flex flex-col">
-      <label className="ml-3 mb-2 text-sm" htmlFor={label}>
-        {label}
-      </label>
+    <div className={`w-full flex ${commentInput ? "" : "relative flex-col"} `}>
+      {!commentInput && (
+        <label className="ml-3 mb-2 text-sm" htmlFor={label}>
+          {label}
+        </label>
+      )}
       {type === "textarea" ? (
         <textarea
           id={id}
           {...register(id, { required })}
           placeholder={placeholder}
           disabled={disabled}
-          className={cn(className, inputClassName)}
+          className={inputClassName}
         ></textarea>
       ) : (
         <input
@@ -50,7 +73,10 @@ const Input = ({
           {...register(id, { required })}
           placeholder={placeholder}
           disabled={disabled}
-          className={cn(className, inputClassName)}
+          className={inputClassName}
+          value={value}
+          onChange={onChange}
+          {...props}
         />
       )}
     </div>

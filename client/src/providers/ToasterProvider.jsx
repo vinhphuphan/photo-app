@@ -2,7 +2,13 @@ import { Toaster } from "react-hot-toast";
 
 const ToasterProvider = () => {
     return ( 
-        <Toaster />
+        <Toaster
+            toastOptions={{
+                style : {
+                    animation : "none"
+                }
+            }} 
+        />
      );
 }
  
