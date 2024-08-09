@@ -1,29 +1,28 @@
 import React, { useEffect, useState } from "react";
-import PhotoCard from "./PhotoSection/PhotoCard";
-import { getCreatedPhotoByUser } from "../utils/fetchFromApi";
-import UserPageMessage from "./UserPageMessage";
+import { getSavedPhotoByUser } from "../../utils/fetchFromApi";
 import { useNavigate } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
+import PhotoCard from "../PhotoSection/PhotoCard";
+import UserPageMessage from "./UserPageMessage"
 
-const CreatedPhotos = ({ user_name }) => {
-  const [createdPhotos, setCreatedPhotos] = useState([]);
+const SavedPhotos = ({ user_name }) => {
+  const [savedPhotos, setSavedPhotos] = useState([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchCreatedPhotos = async () => {
+    const fetchSavedPhotos = async () => {
       setLoading(true);
       try {
-        const result = await getCreatedPhotoByUser(user_name);
-        setCreatedPhotos(result.data);
+        const result = await getSavedPhotoByUser(user_name);
+        setSavedPhotos(result.data);
       } catch (error) {
-        console.log("Error when fetching created photos:", error);
+        console.log("Error when fetching saved photos:", error);
       } finally {
         setLoading(false);
       }
     };
-
-    fetchCreatedPhotos();
+    fetchSavedPhotos();
   }, [user_name]);
 
   if (loading) {
@@ -34,13 +33,14 @@ const CreatedPhotos = ({ user_name }) => {
     );
   }
 
-  if (createdPhotos.length === 0) {
+  if (savedPhotos.length === 0) {
     return (
       <UserPageMessage
-        message="Nothing to show yet! Pins you create will appear here."
-        buttonLabel="Create Pin"
-        buttonAction={() => navigate("/create")}
+        message="You have not saved any Pins yet."
+        buttonLabel="Find ideas"
+        buttonAction={() => navigate("/")}
         buttonClassName="rounded-3xl px-4 py-3"
+        buttonVariant="secondary"
       />
     );
   }
@@ -49,12 +49,12 @@ const CreatedPhotos = ({ user_name }) => {
     <div className="flex flex-col items-center justify-center w-full px-10 lg:px-2 pt-10">
       {/* Photos Grid */}
       <div className="w-full md:w-4/6 lg:w-3/4 columns-2 sm:columns-3 lg:columns-4 space-y-2 break-inside-avoid">
-        {createdPhotos.map((photo) => (
+        {savedPhotos.map((photo) => (
           <PhotoCard key={photo.photo_id} data={photo} forRecommendSection/>
-        ))}
+        ))} 
       </div>
     </div>
   );
 };
 
-export default CreatedPhotos;
+export default SavedPhotos;

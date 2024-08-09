@@ -14,8 +14,8 @@ import {
   unFollowUser,
 } from "../utils/fetchFromApi";
 import { ClipLoader } from "react-spinners";
-import SavedPhotos from "../components/SavedPhotos";
-import CreatedPhotos from "../components/CreatedPhotos";
+import SavedPhotos from "../components/UserPage/SavedPhotos";
+import CreatedPhotos from "../components/UserPage/CreatedPhotos";
 import UserContext from "../contexts/UserContext";
 
 const UserPage = () => {

@@ -107,7 +107,7 @@ const PhotoDetailsBody = () => {
   }
 
   return (
-    <div className="relative w-full h-auto py-10 xl:h-[90vh] top-20 z-0 pt-2 flex flex-col md:flex-row items-center justify-center">
+    <div className="relative w-full h-auto py-10 top-20 z-0 pt-2 flex flex-col md:flex-row items-center justify-center">
       {/* Navigate back button */}
       <div className=" hidden sm:block absolute top-5 left-5">
         <NavigateBack />
