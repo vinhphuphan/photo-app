@@ -68,7 +68,7 @@ const ReactionSection = ({ photoId, user }) => {
   return (
     <div className="flex flex-row gap-1 items-center">
       <ReactionGrid reactions={reactionTypes} />
-      <div className="text-black text-sm font-semibold mr-2">
+      <div className="text-black text-xs md:text-sm font-semibold mr-1 md:mr-2">
         {reactionCount}
       </div>
       <div className="relative group">

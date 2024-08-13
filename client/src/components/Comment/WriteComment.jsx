@@ -54,7 +54,7 @@ const WriteComment = ({ photoId, user, handleNewComment }) => {
       {user ? (
         <>
           <div className="flex flex-row h-full items-center justify-between">
-            <div className="text-lg font-medium text-black">
+            <div className="text-sm md:text-lg font-medium text-black">
               What do you think?
             </div>
             <ReactionSection photoId={photoId} user={user} />
@@ -63,7 +63,7 @@ const WriteComment = ({ photoId, user, handleNewComment }) => {
             onSubmit={handleSubmit(onSubmit)}
             className="flex flex-row items-center gap-2 relative pb-4"
           >
-            <Avatar src={user ? user.avatar : null} width={40} height={40} />
+            <Avatar src={user ? user.avatar : null} className="w-8 md:w-10 h-8 md:h-10"/>
             <Input
               id="content"
               type="text"
@@ -74,14 +74,14 @@ const WriteComment = ({ photoId, user, handleNewComment }) => {
               errors={errors}
               disabled={loading}
               required
-              className="placeholder-[#cdcdcd] border-[#cdcdcd] rounded-full px-3 py-3 focus:border-none cursor-default flex-grow"
+              className="placeholder-[#cdcdcd] border-[#cdcdcd] rounded-full p-2 md:p-3 focus:border-none cursor-default flex-grow text-xs md:text-sm"
             />
             {inputValue.trim().length > 0 && (
               <Button
                 type="submit"
                 variant="primary"
                 size="icon"
-                className={`absolute rounded-full w-8 h-8 right-2 top-[0.875rem] ${
+                className={`absolute rounded-full w-6 md:w-8 h-6 md:h-8 right-2 top-[0.8rem] md:top-[0.875rem] ${
                   loading ? "cursor-not-allowed" : ""
                 }`}
               >

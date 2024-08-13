@@ -13,10 +13,10 @@ const buttonVariants = cva("flex items-center justify-center cursor-pointer", {
       menu: "px-4 py-3 hover:bg-neutral-200",
     },
     size: {
-      default: "rounded p-2 text-base font-medium ",
-      primary: "rounded-full px-4 py-3 text-base font-medium",
-      icon: "rounded-full w-10 h-10 p-2",
-      menu: "text-base font-medium justify-start",
+      default: "rounded p-2 text-sm md:text-base font-medium ",
+      primary: "rounded-full px-2 md:px-4 py-2 md:py-3 text-sm md:text-base font-medium",
+      icon: "rounded-full w-6 md:w-10 h-6 md:h-10 p-1 md:p-2",
+      menu: "text-sm md:text-base font-medium justify-start",
     },
   },
   defaultVariants: {

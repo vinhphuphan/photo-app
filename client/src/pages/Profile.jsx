@@ -109,9 +109,9 @@ const Profile = () => {
           className="profile-main-container px-5 mt-5 "
         >
           <div className="flex items-center justify-center w-full">
-            <div className="flex flex-col gap-2 w-2/3 md:w-1/2 lg:w-[35%]">
-              <div className="text-2xl font-medium">Profile</div>
-              <div className="text-base font-normal mb-8">
+            <div className="flex flex-col gap-2 w-[90%] md:w-2/3 lg:w-[35%]">
+              <div className="text-lg md:text-2xl font-medium">Profile</div>
+              <div className="text-sm md:text-base font-normal mb-8">
                 Please keep your personal information private. Information you
                 add here is visible to anyone who can view your profile.
               </div>
@@ -129,7 +129,7 @@ const Profile = () => {
                       <Button
                         variant="secondary"
                         size="secondary"
-                        className={`rounded-full px-3 py-2 font-normal ${
+                        className={` rounded-full px-3 py-2 font-normal ${
                           isLoading
                             ? "text-neutral-400 bg-opacity-70 cursor-not-allowed hover:bg-neutral-200 hover:bg-opacity-70"
                             : ""

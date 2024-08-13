@@ -61,7 +61,7 @@ const UserInfoCap = ({ userPostingPhoto }) => {
   return (
     <div className="w-full flex flex-row justify-between items-center mb-2">
       <div className="w-full flex flex-row gap-2 mb-2 justify-between pr-8">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 md:gap-4">
           <Avatar src={userPostingPhoto.avatar} onClick={() => navigate(`/${userPostingPhoto.user_name}`)}/>
           <div className="flex flex-col items-start justify-center">
             <div className="text-sm font-medium text-left cursor-pointer">
@@ -74,7 +74,7 @@ const UserInfoCap = ({ userPostingPhoto }) => {
           <Button
             variant="secondary"
             size="secondary"
-            className={`px-4 py-1 rounded-full
+            className={`px-3 md:px-4 py-1 rounded-full text-sm md:text-base
             ${followStatus
               ? "bg-gray-900 text-white border-none hover:bg-red-800"
               : "bg-white border-2 border-neutral-200 hover:bg-[#0000000f]"

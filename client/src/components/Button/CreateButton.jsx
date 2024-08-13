@@ -1,10 +1,9 @@
 import React from "react";
 import Button from "./Button";
-import { IoChevronDownOutline } from "react-icons/io5";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
-const CreateButton = ({ user, action }) => {
+const CreateButton = ({ user, action, showSearch }) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -20,11 +19,12 @@ const CreateButton = ({ user, action }) => {
       variant="normal"
       size="default"
       className={`flex-shrink-0 gap-2 
+      ${showSearch ? "hidden" : "flex"}
       ${action === "create" ? "bg-gray-900 text-white rounded-full p-3" : ""}
       `}
       onClick={handleClick}
     >
-      Create <IoChevronDownOutline />
+      Create
     </Button>
   );
 };

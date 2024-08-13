@@ -49,7 +49,7 @@ const SaveButton = ({ photoId, initialSavedStatus }) => {
     <Button
       variant="primary"
       size="primary"
-      className={`px-6 z-20 ${
+      className={`px-3 md:px-6 z-20 text-sm md:text-base font-normal md:font-medium ${
         savedStatus ? "bg-gray-900 cursor-not-allowed" : ""
       }`}
       onClick={!savedStatus ? onSave : undefined}

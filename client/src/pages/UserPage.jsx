@@ -92,8 +92,8 @@ const UserPage = () => {
       <div className="pt-20 w-full h-auto pb-36">
         <div className="w-full h-auto flex items-center justify-center mb-8">
           <div className="flex flex-col gap-2 items-center justify-center">
-            <Avatar src={userInfo.avatar} className="w-36 h-36" />
-            <div className="text-4xl font-medium">{userInfo.full_name}</div>
+            <Avatar src={userInfo.avatar} className="w-24 md:w-36 h-24 md:h-36" />
+            <div className="text-xl md:text-2xl lg:text-4xl font-medium">{userInfo.full_name}</div>
             <div className="flex flex-row gap-2">
               <img
                 src="/assets/android-chrome-512x512.png"
@@ -104,7 +104,7 @@ const UserPage = () => {
                 {userInfo.user_name}
               </div>
             </div>
-            <div className="text-base font-normal">
+            <div className="text-sm md:text-base font-normal">
               {followers.length} people are following
             </div>
 
@@ -113,7 +113,7 @@ const UserPage = () => {
               <Button
                 variant="secondary"
                 size="secondary"
-                className="px-4 py-3 rounded-full text-neutral-800 font-medium"
+                className="px-3 md:px-4 py-2 md:py-3 rounded-full text-neutral-800 font-medium"
               >
                 Share
               </Button>
@@ -121,7 +121,7 @@ const UserPage = () => {
                 <Button
                   variant="secondary"
                   size="secondary"
-                  className={`px-4 py-1 rounded-full ${
+                  className={`px-3 md:px-4 py-1 rounded-full ${
                     followStatus
                       ? "bg-gray-900 text-white border-none hover:bg-gray-900"
                       : "bg-primary hover:bg-primary-hover text-white"
@@ -134,7 +134,7 @@ const UserPage = () => {
                 <Button
                   variant="secondary"
                   size="secondary"
-                  className="px-4 py-3 rounded-full text-neutral-800 font-medium"
+                  className="px-3 md:px-4 py-2 md:py-3 rounded-full text-neutral-800 font-medium"
                   onClick={() => navigate("/profile")}
                 >
                   Update profile
@@ -143,7 +143,7 @@ const UserPage = () => {
             </div>
 
             {/* Created and Saved buttons */}
-            <div className="flex flex-row gap-2 px-4 pb-4">
+            <div className="flex flex-row gap-2 px-4 pb-0 md:pb-4">
               <Button
                 variant="secondary"
                 size="secondary"

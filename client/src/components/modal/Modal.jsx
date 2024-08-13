@@ -79,9 +79,9 @@ const Modal = ({
           {/* Modal header */}
           <header
             className="
-                    relative w-full h-auto md:w-4/6 xl:w-2/6
+                    relative w-full h-auto md:w-4/6 lg:w-1/2 xl:w-2/6
                     flex flex-row items-center justify-center
-                    bg-white rounded-t-3xl py-4
+                    bg-white rounded-t-3xl py-2 md:py-4
                     "
           >
             <Button
@@ -92,18 +92,18 @@ const Modal = ({
             >
               <IoMdClose size={30} className="text-black" />
             </Button>
-            <div className="text-2xl font-medium mt-2">{title}</div>
+            <div className="text-lg md:text-2xl font-medium mt-2">{title}</div>
           </header>
 
           {/* Modal Main Content */}
-          <div className="flex justify-center gap-4 w-full md:w-4/6 xl:w-2/6 h-auto bg-white rounded-b-3xl px-6 py-4">
-            <div className="flex flex-col gap-4 w-[60%] h-auto">
+          <div className="flex justify-center gap-4 w-full md:w-4/6 lg:w-1/2 xl:w-2/6 h-auto bg-white rounded-b-3xl px-6 py-4">
+            <div className="flex flex-col gap-4 w-[90%] sm:w-[60%] h-auto">
               {body}
               {/* Button */}
               <Button
                 variant={"primary"}
                 size={"primary"}
-                className={"py-2"}
+                className={"py-2 text-sm md:text-base"}
                 onClick={handleSubmit}
               >
                 {isLoading ? (

@@ -1,32 +1,25 @@
 import React from "react";
-import cn from "../utils/cn"
+import cn from "../utils/cn";
 import { cva } from "class-variance-authority";
 
 const contentContainerVariants = cva("flex flex-col justify-center", {
-  variants : {
-    variant : {
-      default : "bg-white rounded-xl overflow-hidden",
-      profile : ""
+  variants: {
+    variant: {
+      default: "bg-white rounded-xl overflow-hidden",
+      profile: "",
     },
-    size : {
-      default : "w-full h-[85vh] md:w-4/6 xl:w-[60%] py-10 px-14",
-      profile : ""
-    }
+    size: {
+      default: "w-full h-[85vh] md:w-4/6 xl:w-[60%] py-10 px-14",
+      profile: "",
+    },
   },
-  defaultVariants : {
+  defaultVariants: {
     variant: "default",
-    size : "default"
-  }
+    size: "default",
+  },
+});
 
-})
-
-const ContentContainer = ({ 
-  children, 
-  className,
-  variant,
-  size,
-  ...props
- }) => {
+const ContentContainer = ({ children, className, variant, size, ...props }) => {
   return (
     <div
       className="

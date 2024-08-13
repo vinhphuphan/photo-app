@@ -60,7 +60,7 @@ const CommentCard = ({ comment }) => {
       <div className="flex flex-row gap-2">
         {/* Avatar */}
         <Avatar
-          className="object-cover"
+          className="object-cover w-6 md:w-10 h-6 md:h-10"
           width={30}
           height={30}
           src={comment.users.avatar}
@@ -71,7 +71,7 @@ const CommentCard = ({ comment }) => {
           {/* User name and comment content */}
           <div className="flex gap-2">
             <div className="text-black text-sm font-normal text-left text-wrap">
-              <span className="font-medium text-left cursor-pointer mr-2">
+              <span className="font-medium text-left text-sm md:text-base cursor-pointer mr-2">
                 {comment.users.full_name}
               </span>
               {comment.content}
@@ -80,14 +80,14 @@ const CommentCard = ({ comment }) => {
 
           {/* Comment date */}
           <div className="flex gap-4">
-            <div className="text-sm text-neutral-800 font-light">
+            <div className="text-xs md:text-sm text-neutral-800 font-light">
               {formattedDate}
             </div>
 
             {/* Answer button */}
             {user && (
               <div
-                className="text-sm text-[#767676] font-semibold cursor-pointer"
+                className="text-xs md:text-sm text-[#767676] font-semibold cursor-pointer"
                 onClick={() => setShowAnswerInput(true)}
               >
                 Answer

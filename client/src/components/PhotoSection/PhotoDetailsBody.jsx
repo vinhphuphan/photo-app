@@ -141,7 +141,7 @@ const PhotoDetailsBody = () => {
 
             {/* Photo title and description */}
             <div className="w-full flex flex-col gap-2">
-              <h1 className="text-black text-2xl font-medium">{photo.title}</h1>
+              <h1 className="text-black text-lg md:text-2xl font-medium">{photo.title}</h1>
               <p className="text-black text-sm font-light mb-5">
                 {photo.photo_description}
               </p>

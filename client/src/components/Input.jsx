@@ -54,7 +54,7 @@ const Input = ({
   return (
     <div className={`w-full flex ${commentInput ? "" : "relative flex-col"} `}>
       {!commentInput && (
-        <label className="ml-3 mb-2 text-sm" htmlFor={label}>
+        <label className="ml-3 mb-2 text-xs md:text-sm" htmlFor={label}>
           {label}
         </label>
       )}

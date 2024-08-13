@@ -76,7 +76,7 @@ const LoginModal = () => {
   }, [registerModal, loginModal]);
 
   const bodyContent = (
-    <div className="w-full flex flex-col gap-4 mb-2">
+    <div className="w-full flex flex-col gap-3 md:gap-4 mb-2">
       <Input
         id="email"
         label="Email"
@@ -87,6 +87,7 @@ const LoginModal = () => {
         errors={errors}
         required
         autocomplete
+        className="text-xs md:text-sm placeholder:text-xs placeholder:md:text-sm"
       />
       <Input
         id="password"
@@ -97,28 +98,29 @@ const LoginModal = () => {
         register={register}
         errors={errors}
         required
+        className="text-xs md:text-sm placeholder:text-xs placeholder:md:text-sm"
       />
     </div>
   );
 
   const footerContent = (
     <div className="w-full flex flex-col gap-4">
-      <div className="w-full text-center">OR</div>
+      <div className="w-full text-xs md:text-sm text-center">OR</div>
       <Button
         variant=""
         size=""
-        className="w-full relative flex justify-center transition text-sm font-light text-neutral-800 bg-white border-[1px] border-neutral-400 rounded-full hover:bg-neutral-200"
+        className="w-full relative flex pl-5 md:pl-0 justify-center transition text-xs md:text-sm font-light text-neutral-800 bg-white border-[1px] border-neutral-400 rounded-full hover:bg-neutral-200"
         onClick={googleLogin}
       >
-        <FcGoogle size={22} className="absolute left-2 md:left-3 top-1.75" />
+        <FcGoogle className="w-3 h-3 md:w-6 md:h-6 absolute left-2 md:left-3 top-1.75" />
         Continue with Google
       </Button>
-      <div className="text-neutral-500 text-center text-sm mb-2 mt-2 font-light">
+      <div className="text-neutral-500 text-center text-xs md:text-sm mb-2 mt-2 font-light">
         <div className="flex flex-row items-center justify-center gap-2">
           <div>Don't have an account?</div>
           <div
             onClick={toggle}
-            className="text-neutral-800 cursor-pointer hover:underline"
+            className="text-neutral-800 cursor-pointer hover:underline text-xs md:text-sm"
           >
             Create an account
           </div>

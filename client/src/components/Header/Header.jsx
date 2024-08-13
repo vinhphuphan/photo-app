@@ -78,22 +78,24 @@ const Header = ({ action }) => {
 
   return (
     <header
-      className={`navbar fixed w-full z-10 flex items-center px-5 py-4 gap-4 bg-white transition`}
+      className={`navbar fixed w-full z-10 flex items-center justify-between md:justify-normal px-5 py-4 ${showSearch ? "gap-0" : "gap-4"} bg-white transition`}
     >
-      {/* Home button */}
-      <HomeButton showSearch={showSearch} action={action} />
-
-      {/* Create button */}
-      <CreateButton user={user} action={action} />
-
+      <div className="flex flex-row gap-1 md:gap-2">
+        {/* Home button */}
+        <HomeButton showSearch={showSearch} action={action} />
+        {/* Create button */}
+        <CreateButton showSearch={showSearch} user={user} action={action} />
+      </div>
       {/* Show Search Icon  */}
       <Button
         variant={"icon"}
         size={"icon"}
-        className={`${showSearch ? "block" : "hidden"}`}
+        className={`${
+          showSearch ? "flex" : "hidden"
+        } text-xl text-start justify-start mr-2`}
         onClick={() => setShowSearch(false)}
       >
-        <IoArrowBackSharp style={{ fontSize: "24px" }} />
+        <IoArrowBackSharp />
       </Button>
 
       {/* Search bar */}
@@ -102,14 +104,16 @@ const Header = ({ action }) => {
       {/* Icons on the right of Header */}
       <div
         className={`${
-          showSearch ? "hidden" : "flex items-center flex-shrink-0 gap-2"
+          showSearch
+            ? "hidden"
+            : "flex items-center flex-shrink-0 gap-1 md:gap-2"
         } `}
       >
         {/* Show search icon on small screen */}
         <Button
           variant={"icon"}
           size={"icon"}
-          className="block sm:hidden"
+          className="block sm:hidden mr-1 mb-1"
           onClick={() => setShowSearch(true)}
         >
           <IoIosSearch style={{ fontSize: "24px" }} />
@@ -118,11 +122,19 @@ const Header = ({ action }) => {
         {user ? (
           <>
             {/* Icons only when user logged in */}
-            <Button variant={"icon"} size={"icon"}>
+            <Button
+              variant={"icon"}
+              size={"icon"}
+              className={"hidden md:block"}
+            >
               {" "}
               <GoBellFill style={{ fontSize: "24px" }} />{" "}
             </Button>
-            <Button variant={"icon"} size={"icon"}>
+            <Button
+              variant={"icon"}
+              size={"icon"}
+              className={"hidden md:block"}
+            >
               {" "}
               <AiFillMessage style={{ fontSize: "24px" }} />{" "}
             </Button>
@@ -148,7 +160,12 @@ const Header = ({ action }) => {
         ) : (
           <>
             {/* Log in button */}
-            <Button variant="secondary" size="primary" onClick={openLoginModal}>
+            <Button
+              variant="secondary"
+              size="primary"
+              onClick={openLoginModal}
+              className="text-xs md:text-base"
+            >
               Log in
             </Button>
 
@@ -157,6 +174,7 @@ const Header = ({ action }) => {
               variant="primary"
               size="primary"
               onClick={openRegisterModal}
+              className="text-xs md:text-base"
             >
               Sign up
             </Button>

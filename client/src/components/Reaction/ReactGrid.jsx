@@ -14,7 +14,7 @@ const ReactionGrid = ({ reactions }) => {
       {reactions.map((reaction) => (
         <div
           key={reaction}
-          className={`h-5 w-5 mr-[2px] bg-no-repeat bg-cover ${reactionClasses[reaction]}`}
+          className={`h-4 md:h-5 w-4 md:w-5 mr-[2px] bg-no-repeat bg-cover ${reactionClasses[reaction]}`}
         ></div>
       ))}
     </div>

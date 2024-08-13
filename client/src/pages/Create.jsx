@@ -47,7 +47,7 @@ const Create = () => {
         });
         setTimeout(() => {
           window.location.reload();
-        }, 800)
+        }, 800);
       })
       .catch((error) => {
         console.log(error?.response?.data?.message);
@@ -66,10 +66,10 @@ const Create = () => {
   }, []);
 
   return (
-    <div>
+    <div className="overflow-auto">
       <ToasterProvider />
       <Header action="create" />
-      <ContentContainer>
+      <ContentContainer className={`mt-6 mb-32 px-4 md:px-14 w-full h-auto sm:w-4/5 lg:mt-0 lg:mb-0 lg:h-[85vh] rounded-none sm:rounded-xl overflow-auto`}>
         <form onSubmit={handleSubmit(onSubmit)} className="w-full h-full">
           {/* Content header */}
           <div className="w-full h-auto flex flex-row justify-between mb-5">
@@ -87,9 +87,9 @@ const Create = () => {
           </div>
 
           {/* Main content */}
-          <div className="w-full h-5/6 flex flex-row justify-between">
+          <div className="w-full h-auto lg:h-5/6 flex flex-col gap-4 justify-center items-center lg:items-start lg:flex-row lg:justify-between">
             {/* Photo Upload */}
-            <div className="flex w-2/5 ">
+            <div className="flex w-4/5 md:w-3/5 h-[60vh] lg:h-full lg:w-2/5 ">
               <ImageUpload
                 sendUrl={handleUrl}
                 disabled={isLoading}
@@ -97,7 +97,7 @@ const Create = () => {
               />
             </div>
             {/* Photo Details */}
-            <div className="flex flex-col gap-4 w-[55%]">
+            <div className="flex flex-col gap-4 w-4/5 lg:w-[55%]">
               <Input
                 id="title"
                 label="Title"
