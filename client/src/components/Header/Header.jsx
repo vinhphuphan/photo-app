@@ -142,7 +142,7 @@ const Header = ({ action }) => {
               {" "}
               <Avatar
                 src={user.avatar}
-                onClick={() => navigate(`/${user.user_name}`)}
+                onClick={() => navigate(`/user/${user.user_name}`)}
               />{" "}
             </Button>
             <Button

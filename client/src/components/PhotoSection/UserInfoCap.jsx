@@ -62,7 +62,7 @@ const UserInfoCap = ({ userPostingPhoto }) => {
     <div className="w-full flex flex-row justify-between items-center mb-2">
       <div className="w-full flex flex-row gap-2 mb-2 justify-between pr-8">
         <div className="flex items-center gap-2 md:gap-4">
-          <Avatar src={userPostingPhoto.avatar} onClick={() => navigate(`/${userPostingPhoto.user_name}`)}/>
+          <Avatar src={userPostingPhoto.avatar} onClick={() => navigate(`/user/${userPostingPhoto.user_name}`)}/>
           <div className="flex flex-col items-start justify-center">
             <div className="text-sm font-medium text-left cursor-pointer">
               {userPostingPhoto.full_name}

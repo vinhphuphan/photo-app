@@ -53,7 +53,7 @@ export default function App() {
             <Route path="/search/:query" element={<Search />} />
             <Route path="/photo/:id/" element={<PhotoDetails />} />
             <Route path="/create" element={<Create />} />
-            <Route path="/:user_name/" element={<UserPage />} />
+            <Route path="/user/:user_name/" element={<UserPage />} />
             <Route path="/profile" element={<Profile />} />
           </Routes>
         </BrowserRouter>

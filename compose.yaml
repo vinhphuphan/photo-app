@@ -1,0 +1,37 @@
+services:
+  db:
+    container_name: photo_app_db
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456789asdA
+      MYSQL_DATABASE: pinterest
+    ports:
+      - 3307:3306
+    expose:
+      - 3306
+    volumes:
+      - mysql_data:/var/lib/mysql
+    
+  backend:
+    build: ./server
+    container_name: server
+    restart: always
+    ports:
+      - 8080:8080
+    environment:
+      DATABASE_URL: mysql://root:123456789asdA@db:3306/pinterest
+    depends_on:
+      - db
+
+  frontend:
+    build: ./client
+    container_name: client
+    restart: always
+    ports:
+      - 8081:80
+    depends_on:
+      - backend
+
+volumes:
+  mysql_data:

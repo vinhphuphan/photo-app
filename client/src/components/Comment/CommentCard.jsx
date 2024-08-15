@@ -64,7 +64,7 @@ const CommentCard = ({ comment }) => {
           width={30}
           height={30}
           src={comment.users.avatar}
-          onClick={() => navigate(`/${comment.users.user_name}`)}
+          onClick={() => navigate(`/user/${comment.users.user_name}`)}
         />
 
         <div className="flex flex-col w-full gap-1">

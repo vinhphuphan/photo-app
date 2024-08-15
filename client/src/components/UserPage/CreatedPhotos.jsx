@@ -48,7 +48,7 @@ const CreatedPhotos = ({ user_name }) => {
   return (
     <div className="flex flex-col items-center justify-center w-full px-10 lg:px-2 pt-10">
       {/* Photos Grid */}
-      <div className="w-full md:w-4/6 lg:w-3/4 columns-1 sm:columns-2 md:columns-3 lg:columns-4 space-y-2 break-inside-avoid">
+      <div className="w-full md:w-4/6 lg:w-3/4 columns-2 md:columns-3 lg:columns-4 space-y-2 break-inside-avoid">
         {createdPhotos.map((photo) => (
           <PhotoCard key={photo.photo_id} data={photo} forRecommendSection/>
         ))}

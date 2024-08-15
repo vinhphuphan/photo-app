@@ -9,7 +9,7 @@ const PhotoLayout = ({ photos }) => {
     lg:px-2
     pt-20
     w-full
-    columns-1
+    columns-2
     sm:columns-3
     lg:columns-4
     xl:columns-5
