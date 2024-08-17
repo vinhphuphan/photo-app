@@ -27,8 +27,6 @@ const Home = () => {
       }
     };
     fetchPhotos();
-
-    
   }, [setPhotos]);
 
   return (

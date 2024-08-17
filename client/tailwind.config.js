@@ -47,7 +47,10 @@ module.exports = {
       },
       animation: {
         slideUp: 'slideUp 0.4s ease-in-out',
-      }
+      },
+      gridTemplateRows : {
+        'auto-fill': 'repeat(auto-fill, minmax(0, 1fr))',
+      },
     },
   },
   plugins: [],

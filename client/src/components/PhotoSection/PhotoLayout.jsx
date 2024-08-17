@@ -1,31 +1,74 @@
+import { useRef } from "react";
 import PhotoCard from "./PhotoCard";
+import clsx from "clsx";
+import useLazyLoad from "../../hooks/useLazyLoad";
+import LoadingCard from "./LoadingCard";
 
 const PhotoLayout = ({ photos }) => {
+  const triggerRef = useRef(null);
+  const numPerPage = 20;
+
+  // Function to simulate fetching data for the current page
+  const onGrabData = (currentPage) => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const startIndex = (currentPage - 1) * numPerPage;
+        const endIndex = Math.min(startIndex + numPerPage, photos.length);
+        const data = photos.slice(startIndex, endIndex);
+        const hasMore = endIndex < photos.length;
+        resolve({ data, hasMore });
+      }, 2000);
+    });
+  };
+  // eslint-disable-next-line
+  const { data, loading, hasMore } = useLazyLoad({ triggerRef, onGrabData });
+
+  const heights = [
+    "10",
+    "11",
+    "12",
+    "13",
+    "14",
+    "16",
+    "18",
+    "20",
+  ];
+
+  // Generate random height classes for loading cards
+  const getRandomHeight = () => {
+    return heights[Math.floor(Math.random() * heights.length)];
+  };
 
   return (
-    <div
-      className="
+    <>
+      <div
+        className="
+    masonry
     px-5
     lg:px-2
     pt-20
     w-full
-    columns-2
-    sm:columns-3
-    lg:columns-4
-    xl:columns-5
-    2xl:columns-6
-    space-y-2
     gap-4
     break-inside-avoid"
-    >
-      {photos.map((photo) => (
-        <PhotoCard
-          key={photo.photo_id}
-          data={photo}
-          forRecommendSection={false}
-        />
-      ))}
-    </div>
+      >
+        {data.map((photo) => (
+          <PhotoCard
+            key={photo.photo_id}
+            data={photo}
+            forRecommendSection={false}
+            heightClass={getRandomHeight()}
+          />
+        ))}
+        {loading &&
+          Array.from({ length: numPerPage }).map((_, index) => (
+            <LoadingCard key={index} heightClass={getRandomHeight()} />
+          ))}
+      </div>
+      <div
+        ref={triggerRef}
+        className={clsx(("trigger", { visible: loading }))}
+      ></div>
+    </>
   );
 };
 

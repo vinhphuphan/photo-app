@@ -117,7 +117,7 @@ const UserPage = () => {
               >
                 Share
               </Button>
-              {user.user_name !== user_name ? (
+              {user && user.user_name !== user_name ? (
                 <Button
                   variant="secondary"
                   size="secondary"
