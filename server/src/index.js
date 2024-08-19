@@ -11,7 +11,9 @@ const port = process.env.PORT || 8080;
 
 // Middleware
 app.use(express.json());
-app.use(cors());
+app.use(cors(
+    
+));
 app.use(rootRouter);
 
 app.listen(port, () => {
