@@ -16,6 +16,7 @@ const ReactionSection = ({ photoId, user }) => {
   const [userReaction, setUserReaction] = useState("");
   const [reactionCount, setReactionCount] = useState(0);
   const [reactionTypes, setReactionTypes] = useState([]);
+  const [reactionListVisible, setReactionListVisible] = useState(false);
 
   useEffect(() => {
     const fetchReactions = async () => {
@@ -60,6 +61,7 @@ const ReactionSection = ({ photoId, user }) => {
       const react_types = await getReactionType(photoId);
       setReactionCount(reaction_count.data);
       setReactionTypes(react_types.data);
+      setReactionListVisible(false)
     } catch (error) {
       toast.error("Failed to handle reaction");
     }
@@ -71,12 +73,15 @@ const ReactionSection = ({ photoId, user }) => {
       <div className="text-black text-xs md:text-sm font-semibold mr-1 md:mr-2">
         {reactionCount}
       </div>
-      <div className="relative group">
+      <div 
+      className="relative" 
+      onMouseEnter={() => setReactionListVisible(true)}
+      onMouseLeave={() => setReactionListVisible(false)}>
         <ReactionButton
           reaction={userReaction}
           onClick={() => handleReaction(userReaction ? "" : userReaction)}
         />
-        <ReactionList onReaction={handleReaction} />
+        {reactionListVisible && <ReactionList onReaction={handleReaction} />}
       </div>
     </div>
   );

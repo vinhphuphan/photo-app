@@ -21,6 +21,7 @@ const LoginModal = () => {
     register,
     handleSubmit,
     formState: { errors },
+    reset
   } = useForm({
     defaultValues: {
       email: "",
@@ -54,20 +55,42 @@ const LoginModal = () => {
   const onSubmit = async (data) => {
     setIsLoading(true);
 
-    axios
-      .post(`${process.env.REACT_APP_BASE_URL}/users/login`, data)
-      .then((result) => {
-        localStorage.setItem("ACCESS_TOKEN", result.data.data.token);
-        setUser(result.data.data.user);
-        loginModal.onClose();
-        toast.success("Logged in succesfully");
-      })
-      .catch((err) => {
-        toast.error(err?.response?.data?.message);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+    const { email, password } = data;
+
+    // Email validation regex
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!email) {
+      toast.error("Email is missing!");
+      setIsLoading(false);
+      return;
+    }
+
+    if (!emailRegex.test(email)) {
+      toast.error("Invalid email address!");
+      setIsLoading(false);
+      return;
+    }
+
+    if (!password) {
+      toast.error("Password is missing!");
+      setIsLoading(false);
+      return;
+    }
+
+    // Proceed with login if all fields are valid
+    try {
+      const result = await axios.post(`${process.env.REACT_APP_BASE_URL}/users/login`, data);
+      localStorage.setItem("ACCESS_TOKEN", result.data.data.token);
+      setUser(result.data.data.user);
+      loginModal.onClose();
+      toast.success("Logged in successfully");
+      reset();
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Something went wrong!");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const toggle = useCallback(() => {
