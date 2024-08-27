@@ -11,6 +11,7 @@ const PhotoCard = ({ data, heightClass }) => {
   const [savedStatus, setSavedStatus] = useState(false);
   const [saving, setSaving] = useState(false);
   const [user] = useContext(UserContext);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   useEffect(() => {
     const checkIfSaved = async () => {
@@ -27,6 +28,22 @@ const PhotoCard = ({ data, heightClass }) => {
 
     checkIfSaved();
   }, [data.photo_id, user]);
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const getAdjustedHeightClass = (heightClass) => {
+    const height = parseInt(heightClass, 10);
+    if (height > 18) return height - 8;
+    if (height >= 13 && height <= 18) return height - 6;
+    return height - 5;
+  };
+
+  const adjustedHeightClass = windowWidth < 640 ? getAdjustedHeightClass(heightClass) : heightClass;
 
   const onSave = useCallback(
     async (event) => {
@@ -58,8 +75,8 @@ const PhotoCard = ({ data, heightClass }) => {
   return (
     <div
       onClick={() => navigate(`/photo/${data.photo_id}`)}
-      className={`relative break-inside-avoid cursor-pointer group`}
-      style={{ gridRow: `span ${heightClass}` }}
+      className={`relative break-inside-avoid cursor-pointer group overflow-hidden`}
+      style={{ gridRow: `span ${adjustedHeightClass}` }}
     >
       <img
         alt=""

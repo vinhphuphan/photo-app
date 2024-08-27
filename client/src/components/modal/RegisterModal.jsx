@@ -17,6 +17,12 @@ const RegisterModal = () => {
   const registerModal = useRegisterModal();
   const loginModal = useLoginModal();
   const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [birthdate, setBirthdate] = useState("");
+
+
   const {
     register,
     handleSubmit,
@@ -40,7 +46,7 @@ const RegisterModal = () => {
       })
       .catch((error) => {
         console.log(error?.response?.data?.message);
-        toast.error("Something went wrong!");
+        toast.error(error?.response?.data?.message || "Something went wrong!");
       })
       .finally(() => {
         setIsLoading(false);
@@ -54,7 +60,8 @@ const RegisterModal = () => {
         'https://www.googleapis.com/oauth2/v3/userinfo',
         { headers: { Authorization: `Bearer ${tokenResponse.access_token}` } },
       );
-      await axios.post("http://localhost:8080/users/google", userInfo)
+      await axios
+        .post(`${process.env.REACT_APP_BASE_URL}/users/google`, userInfo)
         .then((result) => {
             localStorage.setItem("ACCESS_TOKEN", result.data.data.token);
             setUser(result.data.data.user)
@@ -88,6 +95,8 @@ const RegisterModal = () => {
             register={register}
             errors={errors}
             className="text-xs md:text-sm placeholder:text-xs placeholder:md:text-sm"
+            onChange={(e) => setEmail(e.target.value)}
+            value={email}
           />
           <Input
             id="password"
@@ -98,6 +107,8 @@ const RegisterModal = () => {
             register={register}
             errors={errors}
             className="text-xs md:text-sm placeholder:text-xs placeholder:md:text-sm"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
           <Input
             id="full_name"
@@ -108,6 +119,8 @@ const RegisterModal = () => {
             register={register}
             errors={errors}
             className="text-xs md:text-sm placeholder:text-xs placeholder:md:text-sm"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
           />
           <Input
             id="birthdate"
@@ -117,6 +130,8 @@ const RegisterModal = () => {
             register={register}
             errors={errors}
             className="text-xs md:text-sm placeholder:text-xs placeholder:md:text-sm"
+            value={birthdate}
+            onChange={(e) => setBirthdate(e.target.value)}
           />
     </div>
   );

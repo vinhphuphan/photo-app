@@ -10,7 +10,7 @@ const CreateButton = ({ user, action, showSearch }) => {
     if (user) {
       navigate("/create");
     } else {
-      toast.error("You have to log in to create a new pin!!");
+      toast.error("Log in to create a new pin!!");
     }
   };
 

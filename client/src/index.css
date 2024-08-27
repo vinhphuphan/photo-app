@@ -51,8 +51,14 @@
 
 .masonry {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(13.75rem, 1fr));
+  /* Mobile and small screens: 2 columns */
+  grid-template-columns: repeat(2, minmax(8rem, 1fr));
+  /* Medium screens and up: auto-fill the columns */
+  @screen md {
+    grid-template-columns: repeat(auto-fill, minmax(13.75rem, 1fr));
+  }
   grid-auto-rows: 10px;
 }
+
 
 

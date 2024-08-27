@@ -2,7 +2,7 @@ import { useEffect, useReducer, useCallback } from "react";
 import debounce from "lodash.debounce";
 
 const INTERSECTION_THRESHOLD = 5;
-const LOAD_DELAY_MS = 500;
+const LOAD_DELAY_MS = 1000;
 
 const reducer = (state, action) => {
   switch (action.type) {
